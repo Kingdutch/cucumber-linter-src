@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use CucumberLinter\Console\Application;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+(function () {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 'stderr');
+
+    define('__CUCUMBER_LINTER_RUNNING__', true);
+
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    ProgressBar::setFormatDefinition('file_download', ' [%bar%] %percent:3s%% %fileSize%');
+
+    $container = new ContainerBuilder();
+
+    $locator = new FileLocator(dirname( __DIR__) . "/src");
+    $loader = new YamlFileLoader($container, $locator);
+    $loader->load(__DIR__ . "/../config/services.yaml");
+
+    $container->compile();
+
+    $container->get(Application::class)->run();
+})();
