@@ -10,6 +10,7 @@ on:
 
 env:
   BRANCH_NAME: 0.1.x
+  TARGET_PHP_CONSTRAINT: ^8.0
 
 concurrency:
   group: phar-${{ github.ref }} # will be canceled on subsequent pushes in both branches and pull requests
@@ -39,6 +40,12 @@ jobs:
           extensions: mbstring, intl
 
       - name: "Install dependencies"
+        run: "composer install --no-interaction --no-progress"
+
+      - name: "Downgrade for PHP compatibility"
+        run: "vendor/bin/rector -c build/rector-downgrade.php process"
+
+      - name: "Remove dev dependencies"
         run: "composer install --no-dev --no-interaction --no-progress"
 
       - name: "Compile PHAR"
@@ -90,6 +97,58 @@ jobs:
 
       - name: "Delete checksum PHAR"
         run: "rm tmp/cucumber-linter.phar"
+
+  phpstan-lint:
+    name: PHPStan
+    runs-on: "ubuntu-latest"
+
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.2
+          tools: cs2pr
+
+      - name: "Install dependencies"
+        run: "composer install --no-interaction --no-progress"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpstan --error-format=checkstyle | cs2pr"
+
+  phpunit-test:
+    name: PHPUnit Testing
+    runs-on: "ubuntu-latest"
+
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Install PHP for set-up"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.2
+
+      - name: "Install dependencies"
+        run: "composer install --no-interaction --no-progress"
+
+      - name: "Downgrade for PHP compatibility"
+        run: "vendor/bin/rector -c build/rector-downgrade.php process"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit --log-junit $GITHUB_WORKSPACE/test-reports/phpunit.xml tests"
 
   commit:
     name: "Commit PHAR"
