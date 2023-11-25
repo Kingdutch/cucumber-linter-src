@@ -182,16 +182,19 @@ jobs:
           crate: lucky_commit
           args: --no-default-features
 
+      - name: "Configure git signing"
+        run: |
+          git config --global user.name "cucumber-linter-bot"
+          git config --global user.email "cucumber-linter-bot@alexandervarwijk.com"
+          git config --global gpg.format ssh
+          git config --global user.signingkey ~/.ssh/signing_key
+
       - name: "Commit PHAR - development"
         if: "!startsWith(github.ref, 'refs/tags/') && steps.checksum-difference.outputs.result == 'different'"
         working-directory: cucumber-linter-dist
         env:
           INPUT_LOG: ${{ steps.git-log.outputs.log }}
         run: |
-          git config --global user.name "cucumber-linter-bot"
-          git config --global user.email "cucumber-linter-bot@alexandervarwijk.com"
-          git config --global gpg.format ssh
-          git config --global user.signingkey ~/.ssh/signing_key
           git add .
           git commit -S -m "Updated Cucumber Linter to commit ${{ github.event.after }}" -m "$INPUT_LOG" --author "cucumber-linter-bot <cucumber-linter-bot@alexandervarwijk.com>"
           lucky_commit ${{ steps.short-src-sha.outputs.sha }}
