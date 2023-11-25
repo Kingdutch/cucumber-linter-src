@@ -1,0 +1,17 @@
+{
+  "alias": "cucumber-linter.phar",
+  "banner": false,
+  "base-path": "..",
+  "check-requirements": false,
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\PhpScoper"
+  ],
+  "files": [
+    "vendor/composer/installed.php"
+  ],
+  "directories": [
+    "src"
+  ],
+  "force-autodiscovery": true,
+  "output": "tmp/cucumber-linter.phar"
+}

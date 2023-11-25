@@ -3,11 +3,11 @@
 
 declare(strict_types=1);
 
-use CucumberLinter\Console\Application;
-use Symfony\Component\Config\FileLocator;
+use CucumberLinter\Command\ErrorFormatter\TableErrorFormatter;
+use CucumberLinter\Command\LintCommand;
+use CucumberLinter\Linter;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 (function () {
     error_reporting(E_ALL);
@@ -19,13 +19,14 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
     ProgressBar::setFormatDefinition('file_download', ' [%bar%] %percent:3s%% %fileSize%');
 
-    $container = new ContainerBuilder();
+    $linter = Linter::getInstance();
+    $errorFormatter = new TableErrorFormatter();
 
-    $locator = new FileLocator(dirname( __DIR__) . "/src");
-    $loader = new YamlFileLoader($container, $locator);
-    $loader->load(__DIR__ . "/../config/services.yaml");
+    // We must explicitly build our application here rather than using the
+    // container builder so that the PHAR autoloader finds all the needed files.
+    $application = new Application("Cucumber Linter - Cucumber and Behat Static Analysis Tool", "0.1.0");
+    $application->add(new LintCommand($linter, $errorFormatter));
+    $application->setDefaultCommand("lint", TRUE);
 
-    $container->compile();
-
-    $container->get(Application::class)->run();
+    $application->run();
 })();
