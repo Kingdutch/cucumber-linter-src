@@ -43,11 +43,13 @@
         "bin/cucumber-linter"
     ],
     "require-dev": {
+        "composer/semver": "^3.4",
         "phpstan/extension-installer": "*",
         "phpstan/phpstan": "*",
         "phpstan/phpstan-deprecation-rules": "*",
         "phpstan/phpstan-phpunit": "*",
         "phpstan/phpstan-strict-rules": "*",
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "rector/rector": "^0.18.10"
     }
 }
