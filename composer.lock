@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a963ebb5a182f166f3c52fac446730e4",
+    "content-hash": "295c1e7019e412ad2b81bbd3dcab67b0",
     "packages": [
         {
             "name": "cucumber/gherkin",
@@ -3187,7 +3187,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
