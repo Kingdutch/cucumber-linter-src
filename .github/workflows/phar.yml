@@ -10,7 +10,7 @@ on:
 
 env:
   BRANCH_NAME: 0.1.x
-  TARGET_PHP_CONSTRAINT: ^8.0
+  TARGET_PHP_CONSTRAINT: ^8.1
 
 concurrency:
   group: phar-${{ github.ref }} # will be canceled on subsequent pushes in both branches and pull requests

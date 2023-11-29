@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use Composer\Semver\VersionParser;
 use Rector\Config\RectorConfig;
-use Rector\DowngradePhp81\Rector\FunctionLike\DowngradePureIntersectionTypeRector;
-use Rector\DowngradePhp81\Rector\Property\DowngradeReadonlyPropertyRector;
 use Rector\DowngradePhp82\Rector\Class_\DowngradeReadonlyClassRector;
 
 return static function (RectorConfig $config): void {
@@ -29,8 +27,4 @@ return static function (RectorConfig $config): void {
     $config->rule(DowngradeReadonlyClassRector::class);
   }
 
-  if ($targetPhpVersionId < 80100) {
-    $config->rule(DowngradeReadonlyPropertyRector::class);
-    $config->rule(DowngradePureIntersectionTypeRector::class);
-  }
 };
