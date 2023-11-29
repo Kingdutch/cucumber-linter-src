@@ -57,6 +57,8 @@ class LintCommand extends Command {
     }
 
     $progressBar->finish();
+    $output->writeln('');
+    $output->writeln('');
 
     return $this->errorFormatter->formatErrors($errors, $input, $output);
   }
