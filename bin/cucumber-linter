@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use CucumberLinter\Command\ErrorFormatter\CiDetectedErrorFormatter;
+use CucumberLinter\Command\ErrorFormatter\GithubErrorFormatter;
 use CucumberLinter\Command\ErrorFormatter\TableErrorFormatter;
 use CucumberLinter\Command\LintCommand;
 use CucumberLinter\Linter;
@@ -20,7 +22,9 @@ use Symfony\Component\Console\Helper\ProgressBar;
     ProgressBar::setFormatDefinition('file_download', ' [%bar%] %percent:3s%% %fileSize%');
 
     $linter = Linter::getInstance();
-    $errorFormatter = new TableErrorFormatter();
+    $githubErrorFormatter = new GithubErrorFormatter();
+    $ciErrorFormatter = new CiDetectedErrorFormatter($githubErrorFormatter);
+    $errorFormatter = new TableErrorFormatter($ciErrorFormatter);
 
     // We must explicitly build our application here rather than using the
     // container builder so that the PHAR autoloader finds all the needed files.

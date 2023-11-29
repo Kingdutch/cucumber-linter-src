@@ -10,7 +10,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TableErrorFormatter implements ErrorFormatter {
 
+  public function __construct(
+    private CiDetectedErrorFormatter $ciDetectedErrorFormatter,
+  ) {
+  }
+
   public function formatErrors(array $errors, InputInterface $input, OutputInterface $output): int {
+    $this->ciDetectedErrorFormatter->formatErrors($errors, $input, $output);
     $style = new SymfonyStyle($input, $output);
 
     if ($errors === []) {
