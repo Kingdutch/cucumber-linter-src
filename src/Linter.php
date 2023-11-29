@@ -47,7 +47,23 @@ final class Linter {
       throw new \RuntimeException("Failed to read contents of '$feature'.");
     }
     $pickles = $this->parser->parseString($feature, $feature_contents);
+    $parseErrors = [];
     foreach ($pickles as $envelope) {
+      if ($envelope->parseError !== NULL) {
+        // @todo This shouldn't be a lint error but a non-ignorable error.
+        // @todo This doesn't have test coverage yet.
+        $parseErrors[] = new LintError(
+          $envelope->parseError->message,
+          $feature,
+          $envelope->parseError->source->location?->line,
+        );
+      }
+
+      // If there are parse errors already recorded they're all we display.
+      if ($parseErrors !== []) {
+        continue;
+      }
+
       // We only want the whole document message for this feature file. That
       // allows us to traverse to the rest.
       if ($envelope->gherkinDocument === NULL) {
@@ -57,7 +73,7 @@ final class Linter {
       return $this->lintDocument($envelope->gherkinDocument);
     }
 
-    return [];
+    return $parseErrors;
   }
 
   /**
