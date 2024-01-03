@@ -96,10 +96,10 @@ final class Linter {
     $children = $document->feature?->children ?? [];
     foreach ($children as $child) {
       if ($child->background !== NULL) {
-        $errors[] = $this->lintBackground($document->uri, $child->background);
+        $errors[] = $this->lintBackground($document, $document->uri, $child->background);
       }
       else if ($child->scenario !== NULL) {
-        $errors[] = $this->lintScenario($document->uri, $child->scenario);
+        $errors[] = $this->lintScenario($document, $document->uri, $child->scenario);
       }
     }
 
@@ -109,7 +109,7 @@ final class Linter {
   /**
    * @return \CucumberLinter\LintError[]
    */
-  private function lintBackground(string $feature, Background $background) : array {
+  private function lintBackground(GherkinDocument $document, string $feature, Background $background) : array {
     if ($background->steps === []) {
       return [new LintError("A background must not be declared if it's empty.", $feature, $background->location->line)];
     }
@@ -139,7 +139,7 @@ final class Linter {
   /**
    * @return \CucumberLinter\LintError[]
    */
-  private function lintScenario(string $feature, Scenario $scenario) : array {
+  private function lintScenario(GherkinDocument $document, string $feature, Scenario $scenario) : array {
     $errors = [];
     $has_when = FALSE;
     $has_then = FALSE;
@@ -167,8 +167,7 @@ final class Linter {
         }
         else {
           $has_when = TRUE;
-          $previous_line = $scenario->steps[$i-1]->location->line + count($scenario->steps[$i-1]->dataTable?->rows ?? []);
-          $blank_lines = $step->location->line - $previous_line - 1;
+          $blank_lines = $this->calculateBlankLinesBeforeStep($document, $scenario, $i);
           if ($blank_lines !== 1) {
             $errors[] = new LintError("Expected 1 blank line before start of the 'act' block, found $blank_lines.", $feature, $step->location->line);
           }
@@ -184,8 +183,7 @@ final class Linter {
         }
         else {
           $has_then = TRUE;
-          $previous_line = $scenario->steps[$i-1]->location->line + count($scenario->steps[$i-1]->dataTable?->rows ?? []);
-          $blank_lines = $step->location->line - $previous_line - 1;
+          $blank_lines = $this->calculateBlankLinesBeforeStep($document, $scenario, $i);
           if ($blank_lines !== 1) {
             $errors[] = new LintError("Expected 1 blank line before start of the 'assert' block, found $blank_lines.", $feature, $step->location->line);
           }
@@ -194,6 +192,55 @@ final class Linter {
     }
 
     return $errors;
+  }
+
+  /**
+   * Calculate the number of blank lines between a step and the previous step.
+   *
+   * This takes into account data tables for the previous step and also any
+   * comments that might've been placed above the step we're looking at (which
+   * are not counted as blank lines).
+   *
+   * @param \Cucumber\Messages\GherkinDocument $document
+   *   The entire gherkin document.
+   * @param \Cucumber\Messages\Scenario $scenario
+   *   The scenario we're currently looking at.
+   * @param positive-int $stepNumber
+   *   The current step number to look at.
+   *
+   * @return non-negative-int
+   *   The number of blank lines between the current step and the previous one.
+   */
+  private function calculateBlankLinesBeforeStep(GherkinDocument $document, Scenario $scenario, int $stepNumber) : int {
+    assert(isset($scenario->steps[$stepNumber - 1], $scenario->steps[$stepNumber]));
+    $previous_step = $scenario->steps[$stepNumber - 1];
+    $current_step = $scenario->steps[$stepNumber];
+
+    $previous_step_line = $previous_step->location->line + count($previous_step->dataTable?->rows ?? []);
+
+    $comments_between_lines = 0;
+    /** @var \Cucumber\Messages\Comment $comment */
+    foreach ($document->comments as $comment) {
+      // If the comment line is before or on our previous step line the comment
+      // is too soon.
+      if ($comment->location->line <= $previous_step_line) {
+        continue;
+      }
+      // The comments are in order so if we're at or past our current step line
+      // we don't need to look at the rest.
+      if ($comment->location->line >= $current_step->location->line) {
+        break;
+      }
+      // We're in between our two steps so this is a comment.
+      $comments_between_lines++;
+    }
+
+    $line_breaks_between_steps = $current_step->location->line - $previous_step_line - $comments_between_lines;
+    assert($line_breaks_between_steps >= 1, "For some reason the previous line was at or after the current line.");
+
+    // -1 because we care about blank lines but different steps are always 1
+    // linebreak apart, so blank lines are the line differences above 1.
+    return $line_breaks_between_steps - 1;
   }
 
   /**
