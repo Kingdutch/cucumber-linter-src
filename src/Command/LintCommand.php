@@ -52,7 +52,10 @@ class LintCommand extends Command {
 
     $errors = [];
     foreach ($feature_files as $feature) {
-      $errors[$feature] = $this->linter->lint($feature);
+      $feature_errors = $this->linter->lint($feature);
+      if ($feature_errors !== []) {
+        $errors[$feature] = $feature_errors;
+      }
       $progressBar->advance();
     }
 
