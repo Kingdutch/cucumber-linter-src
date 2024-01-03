@@ -6,6 +6,7 @@ use Cucumber\Gherkin\GherkinParser;
 use Cucumber\Messages\Background;
 use Cucumber\Messages\GherkinDocument;
 use Cucumber\Messages\Scenario;
+use Cucumber\Messages\Step\KeywordType;
 
 final class Linter {
 
@@ -116,15 +117,14 @@ final class Linter {
 
     $errors = [];
 
-    // @todo This does not take internationalization into account.
     $startStep = $background->steps[0];
-    if ($startStep->keyword !== "Given ") {
+    if ($startStep->keywordType !== KeywordType::CONTEXT) {
       $errors[] = new LintError("The first step in a Background must be 'Given'", $feature, $background->steps[0]->location->line);
     }
 
     for ($i=1, $count=count($background->steps); $i<$count; $i++) {
       $step = $background->steps[$i];
-      if ($step->keyword !== "And ") {
+      if ($step->keywordType !== KeywordType::CONJUNCTION) {
         $errors[] = new LintError("Steps in a Background beyond the first one should start with 'And'", $feature, $step->location->line);
       }
 
@@ -144,9 +144,8 @@ final class Linter {
     $has_when = FALSE;
     $has_then = FALSE;
 
-    // @todo This does not take internationalization into account.
     $startStep = $scenario->steps[0];
-    if ($startStep->keyword !== "Given ") {
+    if ($startStep->keywordType !== KeywordType::CONTEXT) {
       $errors[] = new LintError("The first step in a Scenario must be 'Given'", $feature, $scenario->steps[0]->location->line);
     }
 
@@ -156,12 +155,10 @@ final class Linter {
         $errors[] = new LintError("Steps in a scenario beyond the first one should be indented on the same level as the first one. Expected {$startStep->location->column} spaces, got {$step->location->column}.", $feature, $step->location->line);
       }
 
-      // @todo This does not take internationalization into account.
-      if ($step->keyword === "Given ") {
+      if ($step->keywordType === KeywordType::CONTEXT) {
         $errors[] = new LintError("'Given' must only occur once in a scenario to signify the arrange stage of the test. Using it multiple times is an indicator you might want multiple scenarios. Link multiple arrange actions using 'And'.", $feature, $step->location->line);
       }
-      // @todo This does not take internationalization into account.
-      elseif ($step->keyword === "When ") {
+      elseif ($step->keywordType === KeywordType::ACTION) {
         if ($has_when) {
           $errors[] = new LintError("Found duplicate 'When' keyword. 'When' should be used to signal the act stage of the test, link multiple actions using 'And'.", $feature, $step->location->line);
         }
@@ -173,8 +170,7 @@ final class Linter {
           }
         }
       }
-      // @todo This does not take internationalization into account.
-      elseif ($step->keyword === "Then ") {
+      elseif ($step->keywordType === KeywordType::OUTCOME) {
         if (!$has_when) {
           $errors[] = new LintError("Found 'Then' keyword before 'When'. 'Then' should be used to signal the assertion stage of the test.", $feature, $step->location->line);
         }
