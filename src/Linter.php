@@ -18,6 +18,7 @@ final class Linter {
     '@api',
     '@javascript',
     '@no-database',
+    '@use-feature-database-snapshot',
     '@no-install',
     '@no-update',
     '@disabled',
