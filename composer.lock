@@ -4,33 +4,32 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7528aa63fa05f8146b8d6f91d1bdaef3",
+    "content-hash": "b6fa90c43a1924df9fdf1a9ec7aae921",
     "packages": [
         {
             "name": "cucumber/gherkin",
-            "version": "v27.0.0",
+            "version": "v36.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cucumber/gherkin-php.git",
-                "reference": "f14bba04ad4ead19ab5b2e41bb5bfcb2d3dbceb1"
+                "reference": "ba7fe378ec24dfccc3847a2c9811342a92038ebc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cucumber/gherkin-php/zipball/f14bba04ad4ead19ab5b2e41bb5bfcb2d3dbceb1",
-                "reference": "f14bba04ad4ead19ab5b2e41bb5bfcb2d3dbceb1",
+                "url": "https://api.github.com/repos/cucumber/gherkin-php/zipball/ba7fe378ec24dfccc3847a2c9811342a92038ebc",
+                "reference": "ba7fe378ec24dfccc3847a2c9811342a92038ebc",
                 "shasum": ""
             },
             "require": {
-                "cucumber/messages": ">=19.1.4 <=22",
+                "cucumber/messages": ">=19.1.4 <31",
                 "ext-mbstring": "*",
                 "php": "^8.1"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.5",
-                "nikic/php-parser": "^4.14",
-                "phpunit/phpunit": "^10.0",
-                "psalm/plugin-phpunit": "^0.18.0",
-                "vimeo/psalm": "5.15.0"
+                "friendsofphp/php-cs-fixer": "^3.51",
+                "phpunit/phpunit": "^10.5 || ^11.0",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "5.26.1"
             },
             "type": "library",
             "autoload": {
@@ -47,22 +46,22 @@
             ],
             "description": "Gherkin parser",
             "support": {
-                "source": "https://github.com/cucumber/gherkin-php/tree/v27.0.0"
+                "source": "https://github.com/cucumber/gherkin-php/tree/v36.1.0"
             },
-            "time": "2023-09-08T08:55:14+00:00"
+            "time": "2025-10-08T10:49:33+00:00"
         },
         {
             "name": "cucumber/messages",
-            "version": "v22.0.0",
+            "version": "v30.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cucumber/messages-php.git",
-                "reference": "98ba49cb1f37e236644312d65400fc15e96f51d0"
+                "reference": "b7717d8332cc17bc864de65376215cd9da5cc4f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cucumber/messages-php/zipball/98ba49cb1f37e236644312d65400fc15e96f51d0",
-                "reference": "98ba49cb1f37e236644312d65400fc15e96f51d0",
+                "url": "https://api.github.com/repos/cucumber/messages-php/zipball/b7717d8332cc17bc864de65376215cd9da5cc4f2",
+                "reference": "b7717d8332cc17bc864de65376215cd9da5cc4f2",
                 "shasum": ""
             },
             "require": {
@@ -71,10 +70,10 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.5",
-                "phpunit/phpunit": "^9.5",
-                "psalm/plugin-phpunit": "^0.18.0",
+                "phpunit/phpunit": "^10.3||^11.0",
+                "psalm/plugin-phpunit": "^0.19.0",
                 "ramsey/uuid": "^4.5.0",
-                "vimeo/psalm": "^5.0"
+                "vimeo/psalm": "^5.5"
             },
             "type": "library",
             "autoload": {
@@ -91,9 +90,9 @@
             ],
             "description": "JSON schema-based messages for Cucumber's inter-process communication",
             "support": {
-                "source": "https://github.com/cucumber/messages-php/tree/v22.0.0"
+                "source": "https://github.com/cucumber/messages-php/tree/v30.1.0"
             },
-            "time": "2023-04-05T14:58:23+00:00"
+            "time": "2025-09-08T11:42:39+00:00"
         },
         {
             "name": "ondram/ci-detector",

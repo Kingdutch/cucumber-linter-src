@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "cucumber/gherkin": "^27.0",
+        "cucumber/gherkin": "^36",
         "ondram/ci-detector": "^4.1",
         "symfony/config": "^7",
         "symfony/console": "^7",
