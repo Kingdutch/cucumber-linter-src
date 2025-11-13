@@ -17,16 +17,15 @@ use Symfony\Component\Finder\Finder;
  * Lint all *.feature files in a folder.
  */
 class LintCommand extends Command {
-  protected static $defaultName = 'lint';
 
   public function __construct(
     private Linter $linter,
     private TableErrorFormatter $errorFormatter,
   ) {
-    parent::__construct();
+    parent::__construct("lint");
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output) : int {
     $feature_files = [];
 
     $finder = (new Finder())->files()->name("*.feature");
