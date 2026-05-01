@@ -39,7 +39,7 @@ final class Linter {
   }
 
   /**
-   * @return \CucumberLinter\LintError[]
+   * @return list<\CucumberLinter\LintError>
    */
   public function lint(string $feature) : array {
     if (!file_exists($feature)) {
@@ -80,7 +80,7 @@ final class Linter {
   }
 
   /**
-   * @return \CucumberLinter\LintError[]
+   * @return list<\CucumberLinter\LintError>
    */
   private function lintDocument(GherkinDocument $document) : array {
     assert($document->uri !== NULL, "Can not lint anonymous files.");
@@ -89,14 +89,14 @@ final class Linter {
 
     // Ensure tags are used for control flow rather than organization.
     /** @var array<\Cucumber\Messages\Tag> $tags */
-    $tags = $document->feature?->tags ?? [];
+    $tags = $document->feature->tags ?? [];
     foreach ($tags as $tag) {
       if ($tag->name !== "" && !in_array($tag->name, self::ALLOWED_TAGS, TRUE)) {
         $errors[] = [new LintError("Tag '{$tag->name}' is not a valid behat control tag.", $document->uri, $tag->location->line, NULL, "Use folders rather than tags for test organization.")];
       }
     }
 
-    $children = $document->feature?->children ?? [];
+    $children = $document->feature->children ?? [];
     foreach ($children as $child) {
       if ($child->background !== NULL) {
         $errors[] = $this->lintBackground($document, $document->uri, $child->background);
@@ -106,7 +106,7 @@ final class Linter {
       }
     }
 
-    return array_merge(...$errors);
+    return array_values(array_merge(...$errors));
   }
 
   /**
@@ -214,7 +214,7 @@ final class Linter {
     $previous_step = $scenario->steps[$stepNumber - 1];
     $current_step = $scenario->steps[$stepNumber];
 
-    $previous_step_line = $previous_step->location->line + count($previous_step->dataTable?->rows ?? []);
+    $previous_step_line = $previous_step->location->line + count($previous_step->dataTable->rows ?? []);
 
     $comments_between_lines = 0;
     /** @var \Cucumber\Messages\Comment $comment */

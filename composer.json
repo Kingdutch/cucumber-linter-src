@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "cucumber/gherkin": "^36",
         "ondram/ci-detector": "^4.1",
         "symfony/config": "^8",
@@ -46,11 +46,11 @@
     "require-dev": {
         "composer/semver": "^3.4",
         "phpstan/extension-installer": "*",
-        "phpstan/phpstan": "*",
-        "phpstan/phpstan-deprecation-rules": "*",
-        "phpstan/phpstan-phpunit": "*",
-        "phpstan/phpstan-strict-rules": "*",
+        "phpstan/phpstan": "^2",
+        "phpstan/phpstan-deprecation-rules": "^2",
+        "phpstan/phpstan-phpunit": "^2",
+        "phpstan/phpstan-strict-rules": "^2",
         "phpunit/phpunit": "*",
-        "rector/rector": "^0.18.10"
+        "rector/rector": "^2"
     }
 }

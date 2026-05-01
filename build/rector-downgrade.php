@@ -4,27 +4,33 @@ declare(strict_types=1);
 
 use Composer\Semver\VersionParser;
 use Rector\Config\RectorConfig;
-use Rector\DowngradePhp82\Rector\Class_\DowngradeReadonlyClassRector;
 
-return static function (RectorConfig $config): void {
-  $parsePhpVersion = static function (string $version, int $defaultPatch = 0): int {
-    $parts = array_map('intval', explode('.', $version));
+function parsePhpVersion(string $version, int $defaultPatch = 0): int {
+  $parts = array_map('intval', explode('.', $version));
 
-    return $parts[0] * 10000 + $parts[1] * 100 + ($parts[2] ?? $defaultPatch);
-  };
+  return $parts[0] * 10000 + $parts[1] * 100 + ($parts[2] ?? $defaultPatch);
+}
 
-  $targetPhpConstraint = getenv('TARGET_PHP_CONSTRAINT') ?: throw new \Exception("Must specify TARGET_PHP_CONSTRAINT");
-  $targetPhpVersionId = $parsePhpVersion((new VersionParser())->parseConstraints($targetPhpConstraint)->getLowerBound()->getVersion());
+function parseDowngradePhpVersion(string $version): string {
+  $parts = array_map('intval', explode('.', $version));
 
-  $config->paths([
+  return "php$parts[0]$parts[1]";
+}
+
+$targetPhpConstraint = getenv('TARGET_PHP_CONSTRAINT') ?: throw new \Exception("Must specify TARGET_PHP_CONSTRAINT");
+$version = (new VersionParser())->parseConstraints($targetPhpConstraint)->getLowerBound()->getVersion();
+$targetPhpVersionId = parsePhpVersion($version);
+$downgradeSet = parseDowngradePhpVersion($version);
+
+$configBuilder = RectorConfig::configure()
+  ->withPaths([
     __DIR__ . '/../src',
     __DIR__ . '/../tests',
-  ]);
-  $config->phpVersion($targetPhpVersionId);
-  $config->disableParallel();
+  ])
+  ->withPhpVersion($targetPhpVersionId)
+  ->withoutParallel()
+  ;
 
-  if ($targetPhpVersionId < 80200) {
-    $config->rule(DowngradeReadonlyClassRector::class);
-  }
+call_user_func_array([$configBuilder, "withDowngradeSets"], [$downgradeSet => TRUE]);
 
-};
+return $configBuilder;
