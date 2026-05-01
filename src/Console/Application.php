@@ -14,7 +14,7 @@ class Application extends BaseApplication {
   public function __construct(iterable $commands = []) {
     parent::__construct("Cucumber Linter - Cucumber and Behat Static Analysis Tool", "0.1.0");
     foreach ($commands as $command) {
-      $this->add($command);
+      $this->addCommand($command);
     }
     assert(is_countable($commands));
     $this->setDefaultCommand("lint", count($commands) === 1);

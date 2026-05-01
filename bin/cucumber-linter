@@ -29,7 +29,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
     // We must explicitly build our application here rather than using the
     // container builder so that the PHAR autoloader finds all the needed files.
     $application = new Application("Cucumber Linter - Cucumber and Behat Static Analysis Tool", "0.1.0");
-    $application->add(new LintCommand($linter, $errorFormatter));
+    $application->addCommand(new LintCommand($linter, $errorFormatter));
     $application->setDefaultCommand("lint", TRUE);
 
     $application->run();
