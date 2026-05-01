@@ -13,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GithubErrorFormatter implements ErrorFormatter {
 
+  private const GITHUB_FILE_PREFIX_ENV = 'CUCUMBER_LINTER_GITHUB_FILE_PREFIX';
+
   private string $currentWorkingDirectory;
 
   public function __construct()
@@ -27,7 +29,7 @@ class GithubErrorFormatter implements ErrorFormatter {
     foreach ($errors as $featureErrors) {
       foreach ($featureErrors as $fileSpecificError) {
         $metas = [
-          'file' => $this->getRelativePath($fileSpecificError->getFile()),
+          'file' => $this->applyGithubFilePrefix($this->getRelativePath($fileSpecificError->getFile())),
           'line' => $fileSpecificError->getLine(),
           'col' => 0,
         ];
@@ -57,6 +59,29 @@ class GithubErrorFormatter implements ErrorFormatter {
     }
 
     return str_replace('\\', '/', $filename);
+  }
+
+  /**
+   * When running in Docker with a subdirectory mount, paths relative to the
+   * container workdir may omit the monorepo segment; GitHub annotations need
+   * workspace-relative paths.
+   */
+  private function applyGithubFilePrefix(string $relativePath): string {
+    $raw = getenv(self::GITHUB_FILE_PREFIX_ENV);
+    if ($raw === FALSE) {
+      return $relativePath;
+    }
+    $prefix = trim($raw);
+    if ($prefix === '') {
+      return $relativePath;
+    }
+    $prefix = rtrim(str_replace('\\', '/', $prefix), '/');
+    if ($prefix === '') {
+      return $relativePath;
+    }
+    $path = ltrim(str_replace('\\', '/', $relativePath), '/');
+
+    return $path === '' ? $prefix : $prefix . '/' . $path;
   }
 
 }
